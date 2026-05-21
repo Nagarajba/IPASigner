@@ -1,0 +1,14 @@
+name: Cloud Sign IPA
+on:
+  workflow_dispatch:
+    inputs:
+      ipa_url:
+        description: 'Direct Link of your YouTube IPA'
+        required: true
+
+jobs:
+  sign:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4

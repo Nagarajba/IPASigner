@@ -13,13 +13,19 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Setup Asset (IPASigner)
+        run: |
+          chmod +x IPASigner
+          # ಇಲ್ಲಿ ಸಾಫ್ಟ್‌ವೇರ್‌ಗೆ ಪರ್ಮಿಷನ್ ಸಿಗುತ್ತೆ
+
       - name: Run Cloud Sign
         env:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
         run: |
           curl -L "${{ github.event.inputs.ipa_url }}" -o input.ipa
-          mv input.ipa YouTube-Signed.ipa
+          # ಅಸಲಿ ಆಪಲ್ ಐಡಿ ಸರ್ಟಿಫಿಕೇಟ್ ಇಂಜೆಕ್ಟ್ ಮಾಡೋ ಕಮಾಂಡ್:
+          ./IPASigner -i input.ipa -u "$APPLE_ID" -p "$APPLE_PASSWORD" -o YouTube-Signed.ipa
 
       - name: Create Direct Install Link
         run: |
@@ -37,7 +43,7 @@ jobs:
                     <key>kind</key>
                     <string>software-package</string>
                     <key>url</key>
-                    <string>https://github.com/${{ github.repository }}/releases/download/v1/YouTube-Signed.ipa</string>
+                    <string>https://github.com/${{ github.repository }}/releases/download/v2/YouTube-Signed.ipa</string>
                   </dict>
                 </array>
                 <key>metadata</key>
@@ -57,10 +63,10 @@ jobs:
           </plist>
           EOF
 
-      - name: Deploy to Release
+      - name: Deploy to Release v2
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v1
+          tag_name: v2
           files: |
             YouTube-Signed.ipa
             install.plist

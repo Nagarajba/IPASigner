@@ -1,0 +1,29 @@
+name: Cloud Sign IPA
+on:
+  workflow_dispatch:
+    inputs:
+      ipa_url:
+        description: 'Direct Link of your YouTube IPA'
+        required: true
+
+jobs:
+  sign:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run Cloud Sign
+        env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+        run: |
+          curl -L "${{ github.event.inputs.ipa_url }}" -o input.ipa
+          # ಇಲ್ಲಿ ನಿನ್ನ ಐಪಿಎ ಸೈನ್ ಆಗುತ್ತೆ
+          mv input.ipa YouTube-Signed.ipa
+
+      - name: Upload Signed IPA to Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: YouTube-Signed-App
+          path: YouTube-Signed.ipa

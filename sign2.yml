@@ -1,0 +1,27 @@
+name: Cloud Sign IPA
+on:
+  workflow_dispatch:
+    inputs:
+      ipa_url:
+        description: 'Direct Link of your YouTube IPA'
+        required: true
+
+jobs:
+  sign:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install IPASigner
+        run: |
+          sudo gem install cocoapods
+          pod install
+
+      - name: Run Cloud Sign
+        env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+        run: |
+          curl -L "${{ github.event.inputs.ipa_url }}" -o input.ipa
+          ./IPASigner -i input.ipa -u "$APPLE_ID" -p "$APPLE_PASSWORD"
